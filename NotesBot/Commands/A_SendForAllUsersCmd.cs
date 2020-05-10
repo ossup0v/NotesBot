@@ -2,6 +2,7 @@
 using Microsoft.Bot.Schema;
 using NotesBot.Attributes;
 using NotesBot.Interfaces;
+using NotesBot.Service;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +11,11 @@ using System.Threading.Tasks;
 namespace NotesBot.Commands
 {
   [ShowOnlyToAdmin]
-  public class A_ToLowerCmd : ICommand
+  public class A_SendForAllUsersCmd : ICommand
   {
     public string Description { get; set; }
     public List<string> CommandsName { get; set; }
-    public bool IsAdmin { get; } = true;
+    public bool IsAdmin { get; set; } = true;
 
     public async Task Do(ITurnContext<IMessageActivity> turnContext)
     {
@@ -23,20 +24,18 @@ namespace NotesBot.Commands
       {
         if (activity.Text.IsNullOrEmptyOrWhiteSpace())
         {
-          await turnContext.SendActivityAsync(MessageFactory.Text($"Type message for command '/tolower'.\n\rExample: /tl NEED make this TExt In Lower REgISTeR"));
+          await turnContext.SendActivityAsync(MessageFactory.Text($"Type message for command '/sendforallusers'.\n\rExample /sfau This message will get all users!"));
           return;
         }
-        else
-        {
-          await turnContext.SendActivityAsync(MessageFactory.Text(activity.Text.ToLower()));
-        }
+        BotService.SendForAllUsers(activity.Text);
+        await turnContext.SendActivityAsync(MessageFactory.Text($"Message {activity.Text} was sended for all users."));
       }
     }
 
-    public A_ToLowerCmd()
+    public A_SendForAllUsersCmd()
     {
-      CommandsName = new List<string> { "/tolower", "/tl" };
-      Description = "Return text to lower";
+      CommandsName = new List<string> { "/sendforallusers", "/sfau" };
+      Description = "Pushing message for all users";
     }
   }
 }

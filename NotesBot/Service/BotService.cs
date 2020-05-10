@@ -37,18 +37,17 @@ namespace NotesBot.Service
       var activity = turnContext.Activity as Activity;
       if (!String.IsNullOrWhiteSpace(activity.Text))
       {
-        var str = activity.Text.Trim();
-        var indexOfSpace = str.IndexOf(" ");
-        var commandStr = indexOfSpace != -1 ? str.Substring(0, indexOfSpace) : str.ToLower();
+        var commandNameAndMessage = activity.Text.GetFirstWord();
+        var commandStr = commandNameAndMessage.Item1;
         if (commandStr[0] != '/')
           commandStr = '/' + commandStr;
 
         var command = _commands.FirstOrDefault(cmd => cmd.CommandsName.Any(name => name.Equals(commandStr)));
         if (command != null)
         {
+          turnContext.Activity.Text = commandNameAndMessage.Item2;
+
           var user = DataModel.GetUserByUserId(activity.From.Id);
-          if (indexOfSpace != -1)
-            turnContext.Activity.Text = activity.Text.Substring(indexOfSpace, str.Length - indexOfSpace);
           if ((command.IsAdmin && user.IsAdmin) || !command.IsAdmin)
             await command.Do(turnContext);
           else
@@ -71,7 +70,7 @@ namespace NotesBot.Service
       if (user == null)
         return;
 
-      var client = new ConnectorClient(new Uri(user.ServiceUrl));
+      var client = new ConnectorClient(new Uri(user.ServiceUrl), Configurator.BotCredentials);
 
       var userAccount = new ChannelAccount(user.UserId, user.UserName);
       var botAccount = new ChannelAccount(user.FromId, user.FromName);

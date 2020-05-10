@@ -21,14 +21,14 @@ namespace NotesBot.Commands
       var activity = turnContext.Activity as Activity;
       if (activity != null && activity.Conversation != null)
       {
-        if (!String.IsNullOrEmpty(activity.Text))
+        if (activity.Text.IsNullOrEmptyOrWhiteSpace())
         {
-          activity.Text = activity.Text.ToUpper();
-          await turnContext.SendActivityAsync(MessageFactory.Text(activity.Text));
+          await turnContext.SendActivityAsync(MessageFactory.Text($"Type message for command '/toupper'.\n\rExample: /tu NEED make this TExt In Upper REgISTeR"));
+          return;
         }
         else
         {
-          await turnContext.SendActivityAsync(MessageFactory.Text("Type your text"));
+          await turnContext.SendActivityAsync(MessageFactory.Text(activity.Text.ToUpper()));
         }
       }
     }

@@ -19,7 +19,7 @@ namespace NotesBot.Commands
     public async Task Do(ITurnContext<IMessageActivity> turnContext)
     {
       var activity = turnContext.Activity as Activity;
-      if (activity != null && !String.IsNullOrEmpty(activity.Text))
+      if (activity != null)
       {
         var allNamesAndIds = DataModel.Notes?.Where(x => x?.UserId == activity?.From?.Id)?.Select(x => new Tuple<string, int>(x.EntryName, x.Id))?.ToList();
         if (allNamesAndIds == null || allNamesAndIds?.Count == 0)

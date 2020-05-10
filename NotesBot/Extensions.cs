@@ -21,5 +21,26 @@ namespace NotesBot
 
       return resultStr;
     }
+
+    /// <returns>Item1 - work itself, item2 - all the rest.</returns>
+    public static Tuple<string, string> GetFirstWord(this string str, string separator = " ")
+    {
+      if (!str.Contains(separator))
+        return new Tuple<string, string>(string.Empty, string.Empty);
+      else
+      {
+        var indexOf = str.IndexOf(separator);
+        if (indexOf == -1)
+          return new Tuple<string, string>(str, string.Empty);
+        var indexOfLastCharSep = indexOf + separator.Length;
+        var firstW = str.Substring(0, indexOf);
+        var onther = "";
+        if (indexOf != -1 && str.Length >= indexOfLastCharSep)
+          onther = str.Substring(indexOfLastCharSep, str.Length - (indexOfLastCharSep));
+        return new Tuple<string, string>(firstW, onther);
+      }
+    }
+    
+    public static bool IsNullOrEmptyOrWhiteSpace(this string str) => String.IsNullOrEmpty(str) || string.IsNullOrWhiteSpace(str);
   }
 }

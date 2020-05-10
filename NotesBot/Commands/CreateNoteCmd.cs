@@ -15,39 +15,33 @@ namespace NotesBot.Commands
     public string Description { get; set; }
     public List<string> CommandsName { get; set; }
     public bool IsAdmin { get; }
+    private const string _help = "Type text for command '/createnote'.\n\rFirst word after '/cn' is name of note, all the rest is content of note.\n\rExample: /createnote BuyList milk, bread, eggs.";
 
     public async Task Do(ITurnContext<IMessageActivity> turnContext)
     {
       var activity = turnContext.Activity as Activity;
       if (activity != null && activity.Text != null)
       {
-        var name = "";
-        var entry = "";
-        var str = activity.Text.Trim();
-        var indexSpace = str.IndexOf(' ');
-
-        if (indexSpace == -1)
+        var NoteNameAndEntry = activity.Text.GetFirstWord();
+        if (NoteNameAndEntry.Item1.IsNullOrEmptyOrWhiteSpace() || NoteNameAndEntry.Item2.IsNullOrEmptyOrWhiteSpace())
         {
-          name = str;
-          entry = "undefined";
-        }
-        else
-        {
-          name = str.Substring(0, indexSpace);
-          entry = str.Substring(indexSpace + 1, str.Length - indexSpace - 1);
-        }
-        if(entry.Length >= 4000)
-        {
-          await turnContext.SendActivityAsync(MessageFactory.Text("Your entry is very long.."));
+          await turnContext.SendActivityAsync(MessageFactory.Text(_help));
           return;
         }
-        var noteId = DataModel.RememberNote(activity, name, entry, turnContext: turnContext);
+
+        if (NoteNameAndEntry.Item2.Length >= 4000)
+        {
+          await turnContext.SendActivityAsync(MessageFactory.Text("Your note content is too long.."));
+          return;
+        }
+
+        var noteId = DataModel.RememberNote(activity, NoteNameAndEntry.Item1, NoteNameAndEntry.Item2, turnContext: turnContext);
         var message = new StringBuilder();
         message.Append("Note was created\n\r");
-        message.Append($"Id: {noteId} - Name: {name}\n\r");
+        message.Append($"Id: {noteId} - Name: {NoteNameAndEntry.Item1}\n\r");
         message.Append($"\n\r");
         message.Append($"Entry it self\n\r");
-        message.Append($"{entry}");
+        message.Append($"{NoteNameAndEntry.Item2}");
         await turnContext.SendActivityAsync(MessageFactory.Text(message.ToString()));
       }
       else

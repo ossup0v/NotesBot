@@ -15,8 +15,7 @@ namespace NotesBot.Context
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-      var settings = ConfigurationBinder.GetValue<string>(Configurator.Configuration, "ConnectionStrings:SqlConnection");
-      optionsBuilder.UseSqlServer(settings);
+      optionsBuilder.UseSqlServer(Configurator.SqlConnectionString);
     }
   }
 }

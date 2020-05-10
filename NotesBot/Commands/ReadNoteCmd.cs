@@ -19,8 +19,14 @@ namespace NotesBot.Commands
     public async Task Do(ITurnContext<IMessageActivity> turnContext)
     {
       var activity = turnContext.Activity as Activity;
-      if (activity != null && activity.Text != null)
+      if (activity != null)
       {
+        if (activity.Text.IsNullOrEmptyOrWhiteSpace())
+        {
+          await turnContext.SendActivityAsync(MessageFactory.Text($"Type note id for command '/readnote', example /rn 2"));
+          return;
+        }
+
         if (Int32.TryParse(activity.Text, out var id))
         {
           var note = DataModel.Notes.Where(x => x?.UserId == activity?.From?.Id)?.FirstOrDefault(x => x.Id == id);
@@ -30,7 +36,6 @@ namespace NotesBot.Commands
             builder.Append("Note..\n\r");
             builder.Append(note.EntryName + "\n\r");
             builder.Append(note.Entry + "\n\r");
-            //activity.Text = builder.ToString();
             await turnContext.SendActivityAsync(MessageFactory.Text(builder.ToString()));
           }
           else
