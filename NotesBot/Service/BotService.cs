@@ -35,10 +35,11 @@ namespace NotesBot.Service
     public async Task<Activity> Do(ITurnContext<IMessageActivity> turnContext)
     {
       var activity = turnContext.Activity as Activity;
-      if (!String.IsNullOrWhiteSpace(activity.Text))
+      if (activity != null)
       {
-        var commandNameAndMessage = activity.Text.GetFirstWord();
+        var commandNameAndMessage = activity.Text?.GetFirstWord();
         var commandStr = commandNameAndMessage.Item1;
+
         if (commandStr[0] != '/')
           commandStr = '/' + commandStr;
 
@@ -55,8 +56,10 @@ namespace NotesBot.Service
         }
         else
           await new HelpCmd().Do(turnContext);
-
       }
+      else
+        await new HelpCmd().Do(turnContext);
+
       var reply = activity.CreateReply(activity.Text);
 
       if (activity.Attachments != null)
@@ -69,29 +72,32 @@ namespace NotesBot.Service
     {
       if (user == null)
         return;
-
-      var client = new ConnectorClient(new Uri(user.ServiceUrl), Configurator.BotCredentials);
-
-      var userAccount = new ChannelAccount(user.UserId, user.UserName);
-      var botAccount = new ChannelAccount(user.FromId, user.FromName);
-
-      var activity = new Activity
+      try
       {
-        Conversation = new ConversationAccount(id: user.UserId),
-        ChannelId = user.ChannelId,
-        From = userAccount,
-        Recipient = botAccount,
-        Text = message,
-        Id = user.Conversation
-      };
+        var client = new ConnectorClient(new Uri(user.ServiceUrl), Configurator.BotCredentials);
 
-      var reply = activity.CreateReply(message);
-      if (String.IsNullOrEmpty(activity.ServiceUrl))
-      {
-        MicrosoftAppCredentials.IsTrustedServiceUrl(activity.ServiceUrl);
+        var userAccount = new ChannelAccount(user.UserId, user.UserName);
+        var botAccount = new ChannelAccount(user.FromId, user.FromName);
+
+        var activity = new Activity
+        {
+          Conversation = new ConversationAccount(id: user.UserId),
+          ChannelId = user.ChannelId,
+          From = userAccount,
+          Recipient = botAccount,
+          Text = message,
+          Id = user.Conversation
+        };
+
+        var reply = activity.CreateReply(message);
+        if (String.IsNullOrEmpty(activity.ServiceUrl))
+        {
+          MicrosoftAppCredentials.IsTrustedServiceUrl(activity.ServiceUrl);
+        }
+        MicrosoftAppCredentials.IsTrustedServiceUrl(user.ServiceUrl);
+        client.Conversations.ReplyToActivity(reply);
       }
-      MicrosoftAppCredentials.IsTrustedServiceUrl(user.ServiceUrl);
-      client.Conversations.ReplyToActivity(reply);
+      catch (Exception) { /*nope*/ }
     }
 
     public static void SendForAllUsers(string message)

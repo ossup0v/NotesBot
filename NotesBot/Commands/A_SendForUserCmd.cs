@@ -28,7 +28,7 @@ namespace NotesBot.Commands
         var userInfo = userInfoAndMessage.Item1;
         var message = userInfoAndMessage.Item2;
 
-        if (activity.Text.IsNullOrEmptyOrWhiteSpace() || userInfo.IsNullOrEmptyOrWhiteSpace() || message.IsNullOrEmptyOrWhiteSpace())
+        if (activity.Text.IsNullOrWhiteSpace() || userInfo.IsNullOrWhiteSpace() || message.IsNullOrWhiteSpace())
         {
           await turnContext.SendActivityAsync(MessageFactory.Text(_help));
           return;
@@ -49,7 +49,7 @@ namespace NotesBot.Commands
         var msgFindedBy = isFindedById ? $"by id {userInfo}" : $"by user name {userInfo}";
         if (user != null)
         {
-          BotService.SendForUser(user, activity.Text);
+          BotService.SendForUser(user, message);
           await turnContext.SendActivityAsync(MessageFactory.Text($"Message {activity.Text} for user {msgFindedBy}."));
         }
         else

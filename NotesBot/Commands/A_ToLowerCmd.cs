@@ -21,7 +21,7 @@ namespace NotesBot.Commands
       var activity = turnContext.Activity as Activity;
       if (activity != null && activity.Conversation != null)
       {
-        if (activity.Text.IsNullOrEmptyOrWhiteSpace())
+        if (activity.Text.IsNullOrWhiteSpace())
         {
           await turnContext.SendActivityAsync(MessageFactory.Text($"Type message for command '/tolower'.\n\rExample: /tl NEED make this TExt In Lower REgISTeR"));
           return;

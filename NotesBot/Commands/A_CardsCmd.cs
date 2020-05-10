@@ -31,7 +31,7 @@ namespace NotesBot.Commands
       var activity = turnContext.Activity as Activity;
       if (activity?.Conversation != null)
       {
-        if (activity.Text.IsNullOrEmptyOrWhiteSpace())
+        if (activity.Text.IsNullOrWhiteSpace())
         {
           await turnContext.SendActivityAsync(MessageFactory.Text($"Type text for command '/cards'"));
           return;

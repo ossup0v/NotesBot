@@ -21,7 +21,7 @@ namespace NotesBot.Commands
       var activity = turnContext.Activity as Activity;
       if (activity != null)
       {
-        if (activity.Text.IsNullOrEmptyOrWhiteSpace())
+        if (activity.Text.IsNullOrWhiteSpace())
         {
           await turnContext.SendActivityAsync(MessageFactory.Text($"Type note id for command '/readnote', example /rn 2"));
           return;
@@ -39,19 +39,46 @@ namespace NotesBot.Commands
             await turnContext.SendActivityAsync(MessageFactory.Text(builder.ToString()));
           }
           else
-            await turnContext.SendActivityAsync(MessageFactory.Text($"Can't find note by id {id}"));
+            await turnContext.SendActivityAsync(MessageFactory.Text($"Can't find note by id {id}."));
         }
         else
-          await turnContext.SendActivityAsync(MessageFactory.Text($"Can't parse {activity.Text} to int"));
+        {
+          var notes = DataModel.Notes
+            .Where(v => v.UserId == activity.From?.Id
+            && v.EntryName.ToLower().Contains(activity.Text.ToLower()))?
+            .ToList();
+
+          if (notes != null && notes.Count == 1)
+          {
+            var note = notes[0];
+            var builder = new StringBuilder();
+            builder.Append("Note..\n\r");
+            builder.Append(note.EntryName + "\n\r");
+            builder.Append(note.Entry + "\n\r");
+            await turnContext.SendActivityAsync(MessageFactory.Text(builder.ToString()));
+          }
+          else if (notes != null && notes.Count > 1)
+          {
+            var builder = new StringBuilder();
+
+            builder.Append("More than one note found..\n\r");
+            foreach (var note in notes)
+            {
+              builder.Append($"Note name: {note.EntryName}, note id: {note.Id}.\n\r");
+            }
+            builder.Append("Please, pick one of this.\n\r");
+            await turnContext.SendActivityAsync(MessageFactory.Text(builder.ToString()));
+          }
+          else
+            await turnContext.SendActivityAsync(MessageFactory.Text($"Can't find note by name {activity.Text}."));
+        }
       }
-      else
-        await turnContext.SendActivityAsync(MessageFactory.Text("Current command is not implement"));
     }
 
     public ReadNoteCmd()
     {
       CommandsName = new List<string> { "/readnote", "/rn" };
-      Description = "Return note";
+      Description = "Read note by id of nore name.";
     }
   }
 }

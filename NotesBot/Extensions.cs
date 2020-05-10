@@ -26,7 +26,7 @@ namespace NotesBot
     public static Tuple<string, string> GetFirstWord(this string str, string separator = " ")
     {
       if (!str.Contains(separator))
-        return new Tuple<string, string>(string.Empty, string.Empty);
+        return new Tuple<string, string>(str, string.Empty);
       else
       {
         var indexOf = str.IndexOf(separator);
@@ -40,7 +40,6 @@ namespace NotesBot
         return new Tuple<string, string>(firstW, onther);
       }
     }
-    
-    public static bool IsNullOrEmptyOrWhiteSpace(this string str) => String.IsNullOrEmpty(str) || string.IsNullOrWhiteSpace(str);
+    public static bool IsNullOrWhiteSpace(this string str) => String.IsNullOrWhiteSpace(str);
   }
 }

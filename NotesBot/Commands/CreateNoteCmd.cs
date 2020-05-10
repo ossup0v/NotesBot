@@ -23,7 +23,7 @@ namespace NotesBot.Commands
       if (activity != null && activity.Text != null)
       {
         var NoteNameAndEntry = activity.Text.GetFirstWord();
-        if (NoteNameAndEntry.Item1.IsNullOrEmptyOrWhiteSpace() || NoteNameAndEntry.Item2.IsNullOrEmptyOrWhiteSpace())
+        if (NoteNameAndEntry.Item1.IsNullOrWhiteSpace() || NoteNameAndEntry.Item2.IsNullOrWhiteSpace())
         {
           await turnContext.SendActivityAsync(MessageFactory.Text(_help));
           return;

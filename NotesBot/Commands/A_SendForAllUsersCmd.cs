@@ -22,7 +22,7 @@ namespace NotesBot.Commands
       var activity = turnContext.Activity as Activity;
       if (activity != null && activity.Conversation != null)
       {
-        if (activity.Text.IsNullOrEmptyOrWhiteSpace())
+        if (activity.Text.IsNullOrWhiteSpace())
         {
           await turnContext.SendActivityAsync(MessageFactory.Text($"Type message for command '/sendforallusers'.\n\rExample /sfau This message will get all users!"));
           return;
