@@ -2,6 +2,7 @@
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using NotesBot.Attributes;
 using NotesBot.Commands;
 using NotesBot.Context;
 using NotesBot.Interfaces;
@@ -24,7 +25,7 @@ namespace NotesBot.Service
       var commandInterface = typeof(ICommand);
       var allCommands = Assembly.GetAssembly(commandInterface)
         .GetTypes()
-        .Where(t => t.IsClass && !t.IsAbstract && t.GetInterface(nameof(ICommand)) != null);
+        .Where(t => t.IsClass && !t.IsAbstract && t.CustomAttributes.All(attr => attr.AttributeType != typeof(UnacticeCommandAttribute)) && t.GetInterface(nameof(ICommand)) != null);
 
       foreach (var cmd in allCommands)
       {
@@ -106,6 +107,13 @@ namespace NotesBot.Service
       {
         SendForUser(user, message);
       }
+    }
+
+    public static void SendNotifyForUsers(string message)
+    {
+      foreach (var user in DataModel.Users)
+        if (user.IsSubscribedToNotifications)
+          SendForUser(user, message);
     }
   }
 }

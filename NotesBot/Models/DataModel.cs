@@ -46,6 +46,41 @@ namespace NotesBot.Models
       }
     }
 
+    public static void SetUserIsSubscribeForNotifications(Activity activity
+      , bool IsSubscribeForNotifications
+      , ITurnContext<IMessageActivity> turnContext = null)
+    {
+      if (activity != null)
+      {
+        try
+        {
+          var db = new SqlUserRepository();
+          var userId = activity.From.Id;
+          var existsUser = db.GetByUserId(userId);
+          if (existsUser != null)
+          {
+            if (IsSubscribeForNotifications != existsUser.IsSubscribedToNotifications)
+            {
+              existsUser.IsSubscribedToNotifications = IsSubscribeForNotifications;
+              db.Update(existsUser);
+              db.Save();
+            }
+          }
+          else
+          {
+            if (turnContext != null)
+              turnContext.SendActivityAsync(MessageFactory.Text($"{nameof(SetUserIsSubscribeForNotifications)} user with id {userId} is not founded"));
+          }
+        }
+        catch (Exception ex)
+        {
+          if (turnContext != null)
+            turnContext.SendActivityAsync(MessageFactory.Text(ex.Message));
+          Console.WriteLine(ex);
+        }
+      }
+    }
+
     public static User GetUserByUserId(string userId)
     {
       var db = new SqlUserRepository();

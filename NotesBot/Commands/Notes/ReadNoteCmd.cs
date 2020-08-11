@@ -78,7 +78,7 @@ namespace NotesBot.Commands
     public ReadNoteCmd()
     {
       CommandsName = new List<string> { "/readnote", "/rn" };
-      Description = "Read note by id of nore name.";
+      Description = "Read note by id of note name.";
     }
   }
 }

@@ -22,6 +22,7 @@ namespace NotesBot.Models
     public string ServiceUrl { get; set; }
     public string Conversation { get; set; }
     public bool IsAdmin { get; set; }
+    public bool IsSubscribedToNotifications { get; set; }
 
     public User() { }
 

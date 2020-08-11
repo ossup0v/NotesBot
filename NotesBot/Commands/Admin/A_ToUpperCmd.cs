@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 namespace NotesBot.Commands
 {
   [ShowOnlyToAdmin]
+  [UnacticeCommand]
   public class A_ToUpperCmd : ICommand
   {
     public string Description { get; set; }
