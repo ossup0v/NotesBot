@@ -45,7 +45,7 @@ namespace NotesBot.Commands
       var commandInterface = typeof(ICommand);
       var allCommands = Assembly.GetAssembly(commandInterface)
         .GetTypes()
-        .Where(t => t.IsClass && !t.IsAbstract && t.GetInterface(nameof(ICommand)) != null);
+        .Where(t => t.IsClass && !t.IsAbstract && t.CustomAttributes.All(attr => attr.AttributeType != typeof(UnacticeCommandAttribute)) && t.GetInterface(nameof(ICommand)) != null);
       foreach (var cmd in allCommands)
       {
         if (!cmd.GetCustomAttributes(typeof(DontShowInHelpAttribute)).Any() && !cmd.GetCustomAttributes(typeof(ShowOnlyToAdminAttribute)).Any())

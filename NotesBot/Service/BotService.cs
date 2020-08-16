@@ -18,6 +18,7 @@ namespace NotesBot.Service
   public class BotService
   {
     private readonly List<ICommand> _commands;
+
     public BotService()
     {
       _commands = new List<ICommand>();

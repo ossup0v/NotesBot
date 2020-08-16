@@ -20,7 +20,7 @@ namespace NotesBot.Commands.Admin
       var activity = turnContext.Activity as Activity;
       if (activity != null && activity.Conversation != null)
       {
-        PushNotificationService.StopPushing();
+        CronService.StopPushing();
         await turnContext.SendActivityAsync(MessageFactory.Text("You have successfully stop pushing the notifications."));
       }
     }
